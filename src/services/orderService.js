@@ -62,16 +62,16 @@ export const placeUserOrder = async (token, orderData) => {
  *  orderId - Unique Order ID.
 
  */
-export const verifyOrderPayment = async (success, orderId) => {
-  try {
-    const response = await axiosInstance.post("/api/order/verify", {
-      success,
-      orderId,
-    });
+// export const verifyOrderPayment = async (success, orderId) => {
+//   try {
+//     const response = await axiosInstance.post("/api/order/verify", {
+//       success,
+//       orderId,
+//     });
 
-    return response.data.success; // Return true if payment verification is successful
-  } catch (error) {
-    console.error("Payment verification error:", error);
-    throw new Error("An error occurred while verifying payment.");
-  }
-};
+//     return response.data.success; // Return true if payment verification is successful
+//   } catch (error) {
+//     console.error("Payment verification error:", error);
+//     throw new Error("An error occurred while verifying payment.");
+//   }
+// };

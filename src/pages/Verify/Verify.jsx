@@ -1,22 +1,20 @@
 import React, { useEffect, useState } from "react";
 import "./Verify.css";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { verifyOrderPayment } from "../../services/orderService"; 
+import axiosInstance from "../../config/AxiosInstance";
+
 function Verify() {
   const [searchParams] = useSearchParams();
-  const success = searchParams.get("success"); // Get payment success status from URL
-  const orderId = searchParams.get("orderId"); // Get Order ID from URL
+  const success = searchParams.get("success");
+  const orderId = searchParams.get("orderId");
   const navigate = useNavigate();
 
   // State to manage loading and errors
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  /**
-   * Handles the payment verification process.
-   */
   const verifyPayment = async () => {
-    // Check if required parameters exist
+    // Ensure orderId and success exist before making the request
     if (!orderId || !success) {
       setError("Invalid order verification parameters.");
       setLoading(false);
@@ -24,46 +22,42 @@ function Verify() {
     }
 
     try {
-      const isVerified = await verifyOrderPayment(success, orderId); //  Call API service
+      const response = await axiosInstance.post("/api/order/verify", {
+        success,
+        orderId,
+      });
 
-      // Ensure spinner is visible for at least 2 seconds
-      setTimeout(() => {
-        if (isVerified) {
-          navigate("/myorders"); //  Redirect to My Orders page if successful
-        } else {
-          setError("Payment verification failed.");
-          setTimeout(() => navigate("/"), 3000); // Redirect to Home after 3 seconds
-        }
-        setLoading(false);
-      }, 2000); //  Minimum 2-second delay before hiding the spinner
+      if (response.data.success) {
+        navigate("/myorders"); // Redirect to My Orders page if successful
+      } else {
+        setError("Payment verification failed.");
+        setTimeout(() => navigate("/"), 3000); // Redirect after 3 seconds
+      }
     } catch (err) {
-      setTimeout(() => {
-        setError(err.message);
-        setLoading(false);
-        setTimeout(() => navigate("/"), 3000); // Redirect to Home after 3 seconds
-      }, 2000); //  Minimum 2-second delay
+      console.error("Payment verification error:", err);
+      setError("An error occurred while verifying payment.");
+      setTimeout(() => navigate("/"), 3000); // Redirect after 3 seconds
+    } finally {
+      setLoading(false);
     }
   };
 
-  /**
-   * useEffect runs verifyPayment when the component mounts or when orderId/success changes.
-   */
   useEffect(() => {
     verifyPayment();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [orderId, success]);
+  }, [orderId, success]); // Only run if orderId or success changes
 
   return (
     <div className="verify">
       {loading ? (
-        <p className="spinner"></p> 
+        <p className="spinner"></p>
       ) : error ? (
-        <p className="error">{error}</p> 
+        <p className="error">{error}</p>
       ) : (
-        <p>Redirecting...</p> 
+        <p>Redirecting...</p>
       )}
     </div>
   );
 }
 
-export default Verify;
+export default Verify; 
