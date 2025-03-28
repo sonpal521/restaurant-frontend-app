@@ -3,7 +3,7 @@ import "./Verify.css";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import axiosInstance from "../../config/AxiosInstance";
 
-function Verify() {
+function VerifyPage() {
   const [searchParams] = useSearchParams();
   const success = searchParams.get("success");
   const orderId = searchParams.get("orderId");
@@ -60,4 +60,4 @@ function Verify() {
   );
 }
 
-export default Verify; 
+export default VerifyPage; 
