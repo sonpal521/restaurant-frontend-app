@@ -1,9 +1,11 @@
-import React, { useState } from "react";
-import axiosInstance from "../../config/AxiosInstance"; // Import your axios instance
+import  { useState } from "react";
+import axiosInstance from "../../config/AxiosInstance"; 
 import "./LoginPopup.css";
 import { assets } from "../../assets/assets";
+import { toast } from "react-toastify";
 
-function LoginPopup({ setShowLogin }) {
+ function LoginPopup({ setShowLogin }) {
+
   const [currState, setCurrState] = useState("Sign Up");
   const [data, setData] = useState({
     name: "",
@@ -18,23 +20,33 @@ function LoginPopup({ setShowLogin }) {
 
   const onLogin = async (event) => {
     event.preventDefault();
-
+  
     let endpoint = currState === "Login" ? "/api/user/login" : "/api/user/register";
-
+  
     try {
       const response = await axiosInstance.post(endpoint, data);
-
+  
       if (response.data.success) {
         localStorage.setItem("token", response.data.token);
         setShowLogin(false);
+        toast.success("Account created successfully! ");
+        window.location.reload();
       } else {
-        alert(response.data.message);
+        toast.error(response.data.message); // Show error message from API
       }
     } catch (error) {
       console.error("Error:", error.response?.data || error.message);
-      alert("An error occurred while processing your request.");
+  
+      // Handle 409 Conflict Error (User Already Exists)
+      if (error.response?.status === 409) {
+        toast.error("User already registered! Please login.");
+      } else {
+        toast.error("An error occurred. Please try again.");
+      }
     }
   };
+  
+  
 
   return (
     <div className="login-popup">

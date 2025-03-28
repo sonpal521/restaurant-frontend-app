@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState } from "react";
-import { addToCartAPI, removeFromCartAPI, loadCartDataAPI, fetchFoodListAPI } from "../services/cartService"; // ✅ Import API functions
+import { addToCartAPI, removeFromCartAPI, loadCartDataAPI, fetchFoodListAPI } from "../services/cartService";
 
 const StoreContext = createContext(null);
 
@@ -8,44 +8,27 @@ const StoreContextProvider = ({ children }) => {
   const [token, setToken] = useState("");
   const [food_list, setFoodList] = useState([]);
 
-  /**
-   * Add an item to the cart and sync with the backend.
-   * itemId - The ID of the item to add.
-   */
   const addToCart = async (itemId) => {
     setCartItems((prev) => ({
       ...prev,
       [itemId]: (prev[itemId] || 0) + 1,
     }));
-
-    if (token) {
-      await addToCartAPI(itemId, token); //  Call API service
-    }
+    if (token) await addToCartAPI(itemId, token);
   };
 
-  /**
-   * Remove an item from the cart and sync with the backend.
-   * itemId - The ID of the item to remove.
-   */
   const removeFromCart = async (itemId) => {
     setCartItems((prev) => {
       const updatedCart = { ...prev };
       if (updatedCart[itemId] > 1) {
         updatedCart[itemId] -= 1;
       } else {
-        delete updatedCart[itemId]; // Remove item if quantity reaches 0
+        delete updatedCart[itemId];
       }
       return updatedCart;
     });
-
-    if (token) {
-      await removeFromCartAPI(itemId, token); //  Call API service
-    }
+    if (token) await removeFromCartAPI(itemId, token);
   };
 
-  /**
-   * Calculate the total cart amount.
-   */
   const getTotalCartAmount = () => {
     return Object.keys(cartItems).reduce((total, itemId) => {
       const itemInfo = food_list.find((product) => product._id === itemId);
@@ -53,26 +36,16 @@ const StoreContextProvider = ({ children }) => {
     }, 0);
   };
 
-  /**
-   * Load cart data for logged-in users.
-   * userToken - User authentication token.
-   */
   const loadCartData = async (userToken) => {
-    const cartData = await loadCartDataAPI(userToken); //  Call API service
+    const cartData = await loadCartDataAPI(userToken);
     setCartItems(cartData);
   };
 
-  /**
-   * Fetch the food list from the backend.
-   */
   const fetchFoodList = async () => {
-    const foodData = await fetchFoodListAPI(); //  Call API service
+    const foodData = await fetchFoodListAPI();
     setFoodList(foodData);
   };
 
-  /**
-   * Load initial data when the component mounts.
-   */
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
     setToken(storedToken);
@@ -83,23 +56,14 @@ const StoreContextProvider = ({ children }) => {
         await loadCartData(storedToken);
       }
     }
-
-    loadData(); // Fetch food list and user cart on component mount
+    loadData();
   }, []);
 
-  const contextValue = {
-    food_list,
-    cartItems,
-    setCartItems,
-    addToCart,
-    removeFromCart,
-    token,
-    setToken,
-    getTotalCartAmount,
-  };
-
-  return <StoreContext.Provider value={contextValue}>{children}</StoreContext.Provider>;
+  return (
+    <StoreContext.Provider value={{ food_list, cartItems, setCartItems, addToCart, removeFromCart, token, setToken, getTotalCartAmount }}>
+      {children}
+    </StoreContext.Provider>
+  );
 };
 
-export { StoreContext, StoreContextProvider };
-export default StoreContextProvider;
+export { StoreContext, StoreContextProvider }; // ✅ Only Named Exports
