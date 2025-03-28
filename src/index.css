@@ -1,0 +1,70 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  font-family: 'Outfit', sans-serif;
+  scroll-behavior: smooth;
+}
+
+/* Global Styles */
+body {
+  min-height: 100vh;
+  background-color: #ffffff;
+}
+
+/*  Remove link default styles */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/*  Smooth Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  padding: 2px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #6726df;
+  border-radius: 15px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #5826d6;
+}
+
+/* Responsive Container */
+.app {
+  width: 80%;
+  margin: auto;
+}
+
+/* Headings */
+h2 {
+  font-size: 30px;
+  color: blue;
+  font-weight: 600;
+}
+
+/*  Fade-in Animation */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* 📱 Responsive Typography */
+@media (max-width: 750px) {
+  h2 {
+    font-size: 22px;
+  }
+}

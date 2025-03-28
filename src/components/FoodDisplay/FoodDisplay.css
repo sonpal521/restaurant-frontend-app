@@ -1,0 +1,28 @@
+.food-display{
+    margin-top: 30px;
+
+}
+.food-display  h2{
+
+    font-size: max(2vw,24px);
+    font-weight: 600;
+    color: blue;
+
+}
+.food-display-list{
+    display: grid;
+    grid-template-columns: repeat(auto-fill,minmax(240px,1fr));
+    margin-top: 30px;
+    gap: 30px;
+    row-gap: 50px;
+}
+@media (max-width:750px) {
+    .food-display  h2{
+
+        font-size: max(1.5vw,20px);
+        font-weight: 600;
+        color: blue;
+    
+    }
+    
+}
