@@ -12,52 +12,53 @@ function VerifyPage() {
   // State to manage loading and errors
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  const verifyPayment = async () => {
-    // Ensure orderId and success exist before making the request
-    if (!orderId || !success) {
-      setError("Invalid order verification parameters.");
-      setLoading(false);
-      return;
-    }
-
-    try {
-      const response = await axiosInstance.post("/api/order/verify", {
-        success,
-        orderId,
-      });
-
-      if (response.data.success) {
-        navigate("/myorders"); // Redirect to My Orders page if successful
-      } else {
-        setError("Payment verification failed.");
-        setTimeout(() => navigate("/"), 3000); // Redirect after 3 seconds
-      }
-    } catch (err) {
-      console.error("Payment verification error:", err);
-      setError("An error occurred while verifying payment.");
-      setTimeout(() => navigate("/"), 3000); // Redirect after 3 seconds
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
+    const verifyPayment = async () => {
+      // Ensure orderId and success exist before making the request
+      if (!orderId || !success) {
+        setError("Invalid order verification parameters.");
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const response = await axiosInstance.post("/api/order/verify", {
+          success,
+          orderId,
+        });
+
+        if (response.data.success) {
+          setMessage("Payment verified successfully! Redirecting to your orders...");
+          setTimeout(() => navigate("/myorders"), 3000); // Redirect after 3 seconds
+        } else {
+          setError("Payment verification failed.");
+          setTimeout(() => navigate("/"), 3000); // Redirect after 3 seconds
+        }
+      } catch (err) {
+        console.error("Payment verification error:", err);
+        setError("An error occurred while verifying payment.");
+        setTimeout(() => navigate("/"), 3000); // Redirect after 3 seconds
+      } finally {
+        setLoading(false);
+      }
+    };
+
     verifyPayment();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [orderId, success]); // Only run if orderId or success changes
+  }, [orderId, success, navigate]); // Ensure `navigate` is added to dependencies
 
   return (
     <div className="verify">
       {loading ? (
-        <p className="spinner"></p>
+        <div className="spinner"></div>
       ) : error ? (
         <p className="error">{error}</p>
       ) : (
-        <p>Redirecting...</p>
+        <p className="success">{message}</p>
       )}
     </div>
   );
 }
 
-export default VerifyPage; 
+export default VerifyPage;
